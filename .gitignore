@@ -3,5 +3,5 @@ __pycache__
 *.pyc
 *.class
 .project
-.idea/*
+python/.idea/*
 .iml
