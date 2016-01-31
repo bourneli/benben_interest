@@ -83,6 +83,7 @@ class Deposit:
         assert diff_amount >= 0, "diff_amount = %d is less than 0" % diff_amount
 
         # 不同月份的自然月天数
+
         days_3m = (toolkit.add_months_obj(self._start_date, 3) - self._start_date).days
         days_6m = (toolkit.add_months_obj(self._start_date, 6) - self._start_date).days
         days_9m = (toolkit.add_months_obj(self._start_date, 9) - self._start_date).days
@@ -110,8 +111,14 @@ class Deposit:
         elif days_9m + 7 <= n < days_12m:
             earn_interest *= 0.25 * r['month_3'] + 0.5 * r['month_6'] + r['days_7'] * (n - days_9m) / Y
         elif n == days_12m:
-            earn_interest *= r['month_12']
+            earn_interest *= r['year_1']
         else:
             raise Exception("never thrown")
 
         return earn_interest
+
+    #
+    # 计算所有利息
+    #
+    def interest_all(self, date, rate):
+        return self.interest(date, self._amount, rate)

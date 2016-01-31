@@ -44,16 +44,14 @@ def main():
 
             # 取出一年前的数据，计算利息，并且存到明天的账号中
             earn += acc.cycle(storage_date)
+            # print storage_date
 
         open(u"明细.csv", "w").write(str(acc))
         print u"总利息 %s亿，余额 %s亿，\n下面是余额明细:" % (earn, acc.total_amount())
-
+        print u"计算完成！"
     except Exception, e:
         print u"异常:%s" % str(e)
-
-    print u"计算完成！"
     raw_input("")
-
 
 def test():
     print add_months(20140131, 1)

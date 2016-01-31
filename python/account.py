@@ -32,11 +32,9 @@ class Account:
         date_list = sorted(self._all_deposit.keys(), reverse=True)
         while date_list:
             recent_date = date_list.pop(0)
-            # print "recent_date %s" % recent_date.strftime("%Y%m%d")
 
             if recent_date >= date:
-                raise Exception("recent_date(%s) is greater than date(%s)" % (
-                    recent_date.strftime("%Y%m%d"), date.strftime("%Y%m%d")))
+                continue
 
             earn += self._all_deposit[recent_date].interest(date, amount, self._rate_list)  # 计算利息
             withdraw_amount = self._all_deposit[recent_date].withdraw(amount)  # 取钱
@@ -71,9 +69,11 @@ class Account:
         # 1 计算利息
         # 2 取完账户的所有存款
         # 3 存到明天的账户
-        earn = self._all_deposit[one_year_ago].interest()
-        all_inside = self._all_deposit[one_year_ago].withdraw_all()
-        tomorrow_deposit = Deposit(storage_date + timedelta(days=1), all_inside)
-        self.save(tomorrow_deposit)
+        earn = 0.0
+        if one_year_ago in self._all_deposit:
+            earn = self._all_deposit[one_year_ago].interest_all(storage_date, self._rate_list)
+            all_inside = self._all_deposit[one_year_ago].withdraw_all()
+            tomorrow_deposit = Deposit(storage_date + timedelta(days=1), all_inside)
+            self.save(tomorrow_deposit)
 
         return earn
