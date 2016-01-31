@@ -109,7 +109,7 @@ class Deposit:
         elif days_9m <= n < days_9m + 7:
             earn_interest *= 0.25 * r['month_3'] + 0.5 * r['month_6'] + r['day_1'] * (n - days_9m) / Y
         elif days_9m + 7 <= n < days_12m:
-            earn_interest *= 0.25 * r['month_3'] + 0.5 * r['month_6'] + r['days_7'] * (n - days_9m) / Y
+            earn_interest *= 0.25 * r['month_3'] + 0.5 * r['month_6'] + r['day_7'] * (n - days_9m) / Y
         elif n == days_12m:
             earn_interest *= r['year_1']
         else:

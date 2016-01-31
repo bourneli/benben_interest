@@ -5,3 +5,4 @@ __pycache__
 .project
 python/.idea/*
 .iml
+python/build/*

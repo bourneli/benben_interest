@@ -3,6 +3,7 @@
 import sys
 import os.path
 import ConfigParser
+
 from toolkit import *
 from account import Account
 from deposit import Deposit
@@ -17,7 +18,7 @@ def main():
         print rate_list
 
         data_file = ''
-        if len(sys.argv) < 1:
+        if len(sys.argv) < 2:
             data_file = raw_input(u"请输入文件名称:".encode('gbk')).decode('gbk')
         else:
             data_file = sys.argv[1]
