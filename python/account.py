@@ -7,9 +7,9 @@ from deposit import Deposit
 
 class Account:
 
-    def __init__(self, bank_rate={}):
+    def __init__(self, rate_list=[]):
         self._all_deposit = {}
-        self._bank_rate = bank_rate
+        self._rate_list = rate_list
 
     def __str__(self):
         sorted_date = self._all_deposit.keys()
@@ -38,7 +38,7 @@ class Account:
                 raise Exception("recent_date(%s) is greater than date(%s)" % (
                     recent_date.strftime("%Y%m%d"), date.strftime("%Y%m%d")))
 
-            earn += self._all_deposit[recent_date].interest(date, amount, self._bank_rate)  # 计算利息
+            earn += self._all_deposit[recent_date].interest(date, amount, self._rate_list)  # 计算利息
             withdraw_amount = self._all_deposit[recent_date].withdraw(amount)  # 取钱
 
             # print "withdraw amount %s" % withdraw_amount

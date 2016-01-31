@@ -1,22 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from diff import NatureDateDiff, StrictDateDiff
 import toolkit
+from datetime import datetime
 
 # 每笔存款
 Y = 360.0  # 一年的近似天数
 
-
 class Deposit:
-    def __init__(self, start_date, amount, mode="nature"):
+
+    def __init__(self, start_date, amount):
         self._start_date = start_date
         self._amount = amount
-        if 'nature' == mode:
-            # print "nature"
-            self.differ = NatureDateDiff()
-        else:
-            # print "strict"
-            self.differ = StrictDateDiff()
 
     def __str__(self):
         return "%s,%d" % (self._start_date.strftime("%Y/%m/%d"), self._amount)
@@ -69,7 +63,22 @@ class Deposit:
     # @param r 利率表，提供不同时间段的利率
     # TODO: 根据不同时段的利率表计算利息
     #
-    def interest(self, statis_date, withdraw_amount, r={}):
+    def interest(self, statis_date, withdraw_amount, rate_list):
+        r = None
+        for rate in rate_list:
+            assert 'start' in rate, 'start-利息开始时间没有发现'
+            assert 'end' in rate, 'end-利息结束时间没有发现'
+            rate_start = datetime.strptime(rate['start'], '%Y/%m/%d')
+            rate_end = datetime.strptime(rate['end'], '%Y/%m/%d')
+            if rate_start <= self._start_date <= rate_end:
+                r = rate
+                r['day_1'] = float(r['day_1'])
+                r['day_7'] = float(r['day_7'])
+                r['month_3'] = float(r['month_3'])
+                r['month_6'] = float(r['month_6'])
+                r['year_1'] = float(r['year_1'])
+        assert r is not None, "没有包含日期%s的利率" % self._start_date
+
         diff_amount = withdraw_amount if withdraw_amount <= self._amount else self._amount
         assert diff_amount >= 0, "diff_amount = %d is less than 0" % diff_amount
 
