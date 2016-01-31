@@ -13,12 +13,12 @@ class Account:
         return "\n".join([str(self.flow[date]) for date in sorted_date])
 
     def total_amount(self):
-        return sum([deposit.amount for deposit in self.flow.values()])
+        return sum([deposit.amount() for deposit in self.flow.values()])
 
     def save(self, money):
-        if money.start_date in self.flow:
-            raise Exception("deposit (%s) duplicated" % money.start_date.strftime("%Y%m%d"))
-        self.flow[money.start_date] = money
+        if money.start_date() in self.flow:
+            raise Exception("deposit (%s) duplicated" % money.start_date().strftime("%Y%m%d"))
+        self.flow[money.start_date()] = money
 
     def withdraw(self, date, amount):
 
