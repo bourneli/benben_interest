@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-  
 
-import datetime
 import sys
 import os.path
 import ConfigParser
@@ -8,24 +7,18 @@ from toolkit import *
 from account import Account
 from deposit import Deposit
 
-# BANK_RATE = {"year_1":0.05,
-# "month_6":0.045,
-# "month_3":0.040,
-# "day_7":0.020,
-# "day_1":0.010}
-
-
 def main():
+
     try:
 
-        confReader = ConfigParser.ConfigParser()
-        confReader.read(u"配置.ini")
-        print confReader.sections(), confReader.options("interest_rate")
-        BANK_RATE = {"year_1": confReader.getfloat("interest_rate", "year_1"),
-                     "month_6": confReader.getfloat("interest_rate", "month_6"),
-                     "month_3": confReader.getfloat("interest_rate", "month_3"),
-                     "day_7": confReader.getfloat("interest_rate", "day_7"),
-                     "day_1": confReader.getfloat("interest_rate", "day_1")}
+        conf_reader = ConfigParser.ConfigParser()
+        conf_reader.read(u"配置.ini")
+        print conf_reader.sections(), conf_reader.options("interest_rate")
+        BANK_RATE = {"year_1": conf_reader.getfloat("interest_rate", "year_1"),
+                     "month_6": conf_reader.getfloat("interest_rate", "month_6"),
+                     "month_3": conf_reader.getfloat("interest_rate", "month_3"),
+                     "day_7": conf_reader.getfloat("interest_rate", "day_7"),
+                     "day_1": conf_reader.getfloat("interest_rate", "day_1")}
         print BANK_RATE
 
         data_file = ''
@@ -53,21 +46,19 @@ def main():
         storage_list = sorted(storage_list, key=lambda item: item[0])
 
         acc = Account(BANK_RATE)
-        if storage_list:
-            inital_storage = storage_list.pop(0)
-            acc.save(Deposit(inital_storage[0], inital_storage[1], mode))
-        # print acc
-
         earn = 0.0
-        for storage in storage_list:
-            (storage_date, storage_amount) = storage
+        for storage_date, storage_amount in storage_list:
             total_amount = acc.total_amount()
-            # print "total_amount %d" % total_amount
 
+            # 计算当前的存量
             if storage_amount > total_amount:
                 acc.save(Deposit(storage_date, storage_amount - total_amount, mode))
             elif storage_amount < total_amount:
                 earn += acc.withdraw(storage_date, total_amount - storage_amount)
+
+            # 取出一年前的数据，计算利息，并且存到明天的账号中
+            earn += acc.cycle(storage_date)
+
 
         print u"总利息 %s亿，余额 %s亿，\n下面是余额明细:" % (earn, acc.total_amount())
         # print acc

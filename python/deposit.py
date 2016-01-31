@@ -2,8 +2,11 @@
 
 from diff import NatureDateDiff, StrictDateDiff
 import toolkit
+
 # 每笔存款
 Y = 360.0  # 一年的近似天数
+
+
 class Deposit:
     def __init__(self, start_date, amount, mode="nature"):
         self._start_date = start_date
@@ -18,11 +21,23 @@ class Deposit:
     def __str__(self):
         return "%s,%d" % (self._start_date.strftime("%Y/%m/%d"), self._amount)
 
-    def start_date(self): return self._start_date
+    def start_date(self):
+        return self._start_date
 
-    def amount(self): return self._amount
+    def amount(self, amount=None):
+        if amount is None:
+            return self._amount
+        else:
+            self.save(amount)
 
+    #
+    # 取钱，如果取出的金额大于已有的金额，也只能取出已有的金额，并且当前金额会为0
+    # @param withdraw_amount 取出的金额
+    # @return 取出的金额
+    #
     def withdraw(self, withdraw_amount):
+
+        assert withdraw_amount >= 0, "required amount %d is less than 0" % withdraw_amount
         diff_amount = 0
 
         if withdraw_amount < self._amount:
@@ -34,18 +49,18 @@ class Deposit:
 
         return diff_amount
 
-    # def interest(self, statis_date, withdraw_amount, rate_map={}):
-    #     diff_amount = withdraw_amount if withdraw_amount <= self._amount else self._amount
-    #     (diff_year_1, diff_month_6, diff_month_3, diff_day_7, diff_day_1) = self.differ.diff(self._start_date,
-    #                                                                                          statis_date)
     #
-    #     return diff_amount * (
-    #         diff_year_1 * rate_map["year_1"] +
-    #         diff_month_6 * rate_map["month_6"] * 0.5 +
-    #         diff_month_3 * rate_map["month_3"] * 0.25 +
-    #         diff_day_7 * rate_map["day_7"] * (7 / 360.0) +
-    #         diff_day_1 * rate_map["day_1"] * (1 / 360.0))
+    # 取出所有的钱
+    #
+    def withdraw_all(self):
+        return self.withdraw(self._amount)
 
+    #
+    # 存钱
+    #
+    def save(self, amount):
+        assert amount >= 0, "amount %d is less than 0" % amount
+        self._amount += amount
 
     #
     # 计算利息，核心逻辑
@@ -70,21 +85,21 @@ class Deposit:
         # 详细的分段计算公式，参考文档:<home>/doc/利息计算公式.docx
         earn_interest = diff_amount
         if 0 <= n < 7:
-            earn_interest *= r['day_1']*n/Y
+            earn_interest *= r['day_1'] * n / Y
         elif 7 <= n < days_3m:
-            earn_interest *= r['day_7']*n/Y
+            earn_interest *= r['day_7'] * n / Y
         elif days_3m <= n < days_3m + 7:
-            earn_interest *= 0.25*r['month_3']+r['day_1']*(n-days_3m)/Y
+            earn_interest *= 0.25 * r['month_3'] + r['day_1'] * (n - days_3m) / Y
         elif days_3m + 7 <= n < days_6m:
-            earn_interest *= 0.25*r['month_3']+r['day_7']*(n-days_3m)/Y
+            earn_interest *= 0.25 * r['month_3'] + r['day_7'] * (n - days_3m) / Y
         elif days_6m <= n < days_6m + 7:
-            earn_interest *= 0.5*r['month_6']+r['day_1']*(n-days_6m)/Y
+            earn_interest *= 0.5 * r['month_6'] + r['day_1'] * (n - days_6m) / Y
         elif days_6m + 7 <= n < days_9m:
-            earn_interest *= 0.5*r['month_6']+r['day_7']*(n-days_6m)/Y
+            earn_interest *= 0.5 * r['month_6'] + r['day_7'] * (n - days_6m) / Y
         elif days_9m <= n < days_9m + 7:
-            earn_interest *= 0.25*r['month_3']+0.5*r['month_6']+r['day_1']*(n-days_9m)/Y
+            earn_interest *= 0.25 * r['month_3'] + 0.5 * r['month_6'] + r['day_1'] * (n - days_9m) / Y
         elif days_9m + 7 <= n < days_12m:
-            earn_interest *= 0.25*r['month_3']+0.5*r['month_6']+r['days_7']*(n-days_9m)/Y
+            earn_interest *= 0.25 * r['month_3'] + 0.5 * r['month_6'] + r['days_7'] * (n - days_9m) / Y
         elif n == days_12m:
             earn_interest *= r['month_12']
         else:
