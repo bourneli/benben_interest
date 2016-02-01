@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+#
+# 账号对象，用于集体管理存款，计算利息
+#
+
 
 from datetime import timedelta
 import toolkit

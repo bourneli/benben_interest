@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-  
+#
+# 程序主入口
+#
 
 import sys
 import os.path
@@ -7,6 +10,7 @@ import ConfigParser
 from toolkit import *
 from account import Account
 from deposit import Deposit
+
 
 def main():
 
@@ -17,7 +21,6 @@ def main():
         rate_list = [dict(conf_reader.items(rate_name)) for rate_name in conf_reader.sections()]
         print rate_list
 
-        data_file = ''
         if len(sys.argv) < 2:
             data_file = raw_input(u"请输入文件名称:".encode('gbk')).decode('gbk')
         else:
@@ -48,17 +51,16 @@ def main():
             # print storage_date
 
         open(u"明细.csv", "w").write(str(acc))
-        print u"总利息 %s亿，余额 %s亿，\n下面是余额明细:" % (earn, acc.total_amount())
+        print u"余额明细如下\n%s" % acc
+        print u"明细可参考文档'明细.csv'"
+        print u"总利息 %s亿，余额 %s亿" % (earn, acc.total_amount())
         print u"计算完成！"
     except Exception, e:
         print u"异常:%s" % str(e)
-    raw_input("")
 
-def test():
-    print add_months(20140131, 1)
-    print add_months(20140228, -1)
+    print u"按任意键结束！"
+    raw_input("")
 
 
 if __name__ == "__main__":
     main()
-    # test()

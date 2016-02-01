@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+#
+# 生成测试数据
+#
 from datetime import datetime, timedelta
 import random
 

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-
+#
+# 每笔存款对象
+#
 import toolkit
 from datetime import datetime
 
-# 每笔存款
 Y = 360.0  # 一年的近似天数
+
 
 class Deposit:
 
