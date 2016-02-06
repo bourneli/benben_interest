@@ -11,9 +11,9 @@ from deposit import Deposit
 
 class Account:
 
-    def __init__(self, rate_list=[]):
+    def __init__(self, rate_history=[]):
         self._all_deposit = {}
-        self._rate_list = rate_list
+        self._rate_history = rate_history
 
     def __str__(self):
         sorted_date = self._all_deposit.keys()
@@ -40,7 +40,7 @@ class Account:
             if recent_date >= date:
                 continue
 
-            earn += self._all_deposit[recent_date].interest(date, amount, self._rate_list)  # 计算利息
+            earn += self._all_deposit[recent_date].interest(date, amount, self._rate_history)  # 计算利息
             withdraw_amount = self._all_deposit[recent_date].withdraw(amount)  # 取钱
 
             # print "withdraw amount %s" % withdraw_amount
@@ -75,7 +75,7 @@ class Account:
         # 3 存到明天的账户
         earn = 0.0
         if one_year_ago in self._all_deposit:
-            earn = self._all_deposit[one_year_ago].interest_all(storage_date, self._rate_list)
+            earn = self._all_deposit[one_year_ago].interest_all(storage_date, self._rate_history)
             all_inside = self._all_deposit[one_year_ago].withdraw_all()
             tomorrow_deposit = Deposit(storage_date + timedelta(days=1), all_inside)
             self.save(tomorrow_deposit)

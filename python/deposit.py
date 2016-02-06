@@ -9,7 +9,6 @@ Y = 360.0  # 一年的近似天数
 
 
 class Deposit:
-
     def __init__(self, start_date, amount):
         self._start_date = start_date
         self._amount = amount
@@ -65,27 +64,12 @@ class Deposit:
     # @param r 利率表，提供不同时间段的利率
     # TODO: 根据不同时段的利率表计算利息
     #
-    def interest(self, statis_date, withdraw_amount, rate_list):
-        r = None
-        for rate in rate_list:
-            assert 'start' in rate, 'start-利息开始时间没有发现'
-            assert 'end' in rate, 'end-利息结束时间没有发现'
-            rate_start = datetime.strptime(rate['start'], '%Y/%m/%d')
-            rate_end = datetime.strptime(rate['end'], '%Y/%m/%d')
-            if rate_start <= self._start_date <= rate_end:
-                r = rate
-                r['day_1'] = float(r['day_1'])
-                r['day_7'] = float(r['day_7'])
-                r['month_3'] = float(r['month_3'])
-                r['month_6'] = float(r['month_6'])
-                r['year_1'] = float(r['year_1'])
-        assert r is not None, "没有包含日期%s的利率" % self._start_date
+    def interest(self, statis_date, withdraw_amount, rate_history):
 
         diff_amount = withdraw_amount if withdraw_amount <= self._amount else self._amount
         assert diff_amount >= 0, "diff_amount = %d is less than 0" % diff_amount
 
         # 不同月份的自然月天数
-
         days_3m = (toolkit.add_months_obj(self._start_date, 3) - self._start_date).days
         days_6m = (toolkit.add_months_obj(self._start_date, 6) - self._start_date).days
         days_9m = (toolkit.add_months_obj(self._start_date, 9) - self._start_date).days
@@ -96,6 +80,7 @@ class Deposit:
 
         # 详细的分段计算公式，参考文档:<home>/doc/利息计算公式.docx
         earn_interest = diff_amount
+        r = rate_history.get_rates(self._start_date)
         if 0 <= n < 7:
             earn_interest *= r['day_1'] * n / Y
         elif 7 <= n < days_3m:

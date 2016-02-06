@@ -5,21 +5,19 @@
 
 import sys
 import os.path
-import ConfigParser
 
 from toolkit import *
 from account import Account
 from deposit import Deposit
+from rate_history import RateHistory
 
 
 def main():
 
     try:
 
-        conf_reader = ConfigParser.ConfigParser()
-        conf_reader.read(u"配置.ini")
-        rate_list = [dict(conf_reader.items(rate_name)) for rate_name in conf_reader.sections()]
-        print rate_list
+        rate_history = RateHistory(u"配置.ini")
+        print rate_history
 
         if len(sys.argv) < 2:
             data_file = raw_input(u"请输入文件名称:".encode('gbk')).decode('gbk')
@@ -35,7 +33,7 @@ def main():
         storage_list = [(datetime.datetime.strptime(d[0], "%Y/%m/%d"), int(float(d[1]))) for d in data]
         storage_list = sorted(storage_list, key=lambda item: item[0])
 
-        acc = Account(rate_list)
+        acc = Account(rate_history)
         earn = 0.0
         for storage_date, storage_amount in storage_list:
             total_amount = acc.total_amount()
