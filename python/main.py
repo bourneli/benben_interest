@@ -8,10 +8,25 @@ import os.path
 
 from toolkit import *
 from account import Account
-from deposit import Deposit
 from rate_history import RateHistory
 
 
+#
+# 加载存量数据
+#
+def load_balance_flow(data_file):
+
+    file_reader = open(data_file)
+    data = [line.strip().split(',') for line in file_reader.readlines() if '' != line.strip()]
+    balance_list = [(datetime.datetime.strptime(d[0], "%Y/%m/%d"), int(float(d[1]))) for d in data]
+    balance_list = sorted(balance_list, key=lambda item: item[0])
+    assert len(balance_list) == 1 + (balance_list[-1][0] - balance_list[0][0]).days, "data length error"
+    return balance_list
+
+
+#
+# 主入口
+#
 def main():
 
     try:
@@ -28,25 +43,9 @@ def main():
             print u"文件'%s'不存在" % data_file
             exit(0)
 
-        file_reader = open(data_file)
-        data = [line.strip().split(',') for line in file_reader.readlines() if '' != line.strip()]
-        storage_list = [(datetime.datetime.strptime(d[0], "%Y/%m/%d"), int(float(d[1]))) for d in data]
-        storage_list = sorted(storage_list, key=lambda item: item[0])
-
+        balance_list = load_balance_flow(data_file)
         acc = Account(rate_history)
-        earn = 0.0
-        for storage_date, storage_amount in storage_list:
-            total_amount = acc.total_amount()
-
-            # 计算当前的存量
-            if storage_amount > total_amount:
-                acc.save(Deposit(storage_date, storage_amount - total_amount))
-            elif storage_amount < total_amount:
-                earn += acc.withdraw(storage_date, total_amount - storage_amount)
-
-            # 取出一年前的数据，计算利息，并且存到明天的账号中
-            earn += acc.cycle(storage_date)
-            # print storage_date
+        earn = acc.interest(balance_list)
 
         open(u"明细.csv", "w").write(str(acc))
         print u"余额明细如下\n%s" % acc

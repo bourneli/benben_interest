@@ -10,7 +10,6 @@ from deposit import Deposit
 
 
 class Account:
-
     def __init__(self, rate_history=[]):
         self._all_deposit = {}
         self._rate_history = rate_history
@@ -33,10 +32,10 @@ class Account:
 
         # print "amount %s" % amount
         earn = 0
+        # TODO:优化，添加数据检查
         date_list = sorted(self._all_deposit.keys(), reverse=True)
         while date_list:
             recent_date = date_list.pop(0)
-
             if recent_date >= date:
                 continue
 
@@ -79,5 +78,24 @@ class Account:
             all_inside = self._all_deposit[one_year_ago].withdraw_all()
             tomorrow_deposit = Deposit(storage_date + timedelta(days=1), all_inside)
             self.save(tomorrow_deposit)
+
+        return earn
+
+    #
+    # 计算利息
+    #
+    def interest(self, flows):
+        earn = 0.0
+        for storage_date, storage_amount in flows:
+            total_amount = self.total_amount()
+
+            # 计算当前的存量
+            if storage_amount > total_amount:
+                self.save(Deposit(storage_date, storage_amount - total_amount))
+            elif storage_amount < total_amount:
+                earn += self.withdraw(storage_date, total_amount - storage_amount)
+
+            # 取出一年前的数据，计算利息，并且存到明天的账号中
+            earn += self.cycle(storage_date)
 
         return earn
