@@ -39,3 +39,5 @@ def add_months_obj(date_obj, months):
                                                  months), "%Y%m%d")
 
 
+if '__main__' == __name__:
+    print add_months(20160229, -36)

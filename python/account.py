@@ -29,7 +29,6 @@ class Account:
 
         # print "amount %s" % amount
         earn = 0
-        # TODO:优化，添加数据检查
         date_list = sorted(self._all_deposit.keys(), reverse=True)
         while date_list and amount != 0:
             recent_date = date_list.pop(0)
@@ -77,11 +76,8 @@ class Account:
     #  计算所有账号存量
     # @param to 截止时间，None表示全部
     #
-    def total_amount(self, to=None):
-        if to is None:
-            return sum([deposit.amount() for deposit in self._all_deposit.values()])
-        else:
-            return sum([deposit.amount() for start_date, deposit in self._all_deposit.items() if start_date <= to])
+    def total_amount(self):
+        return sum([deposit.amount() for deposit in self._all_deposit.values()])
 
     #
     # 计算利息
@@ -89,13 +85,14 @@ class Account:
     def interest(self, flows):
         earn = 0.0
         for storage_date, storage_amount in flows:
-            total_amount = self.total_amount(storage_date)
 
+            total_amount = self.total_amount()
             # 计算当前的存量
-            if storage_amount > total_amount:
-                self._save(Deposit(storage_date, storage_amount - total_amount))
-            elif storage_amount < total_amount:
-                earn += self._withdraw(storage_date, total_amount - storage_amount)
+            diff = storage_amount - total_amount
+            if diff > 0:
+                self._save(Deposit(storage_date, diff))
+            elif diff < 0:
+                earn += self._withdraw(storage_date, -1 * diff)
 
             # 取出一年前的数据，计算利息，并且存到明天的账号中
             earn += self._cycle(storage_date)

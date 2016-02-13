@@ -18,11 +18,8 @@ class Deposit:
     def start_date(self):
         return self._start_date
 
-    def amount(self, amount=None):
-        if amount is None:
-            return self._amount
-        else:
-            self.save(amount)
+    def amount(self):
+        return self._amount
 
     #
     # 取钱，如果取出的金额大于已有的金额，也只能取出已有的金额，并且当前金额会为0
@@ -60,12 +57,14 @@ class Deposit:
     # @param statis_date 计算日期
     # @param withdraw_amount 本金
     # @param r 利率表，提供不同时间段的利率
-    # TODO: 根据不同时段的利率表计算利息
     #
     def interest(self, statis_date, withdraw_amount, rate_history):
 
+        if 0 == self._amount:
+            return 0.0
+
         diff_amount = withdraw_amount if withdraw_amount <= self._amount else self._amount
-        assert diff_amount >= 0, "diff_amount = %d is less than 0" % diff_amount
+        assert diff_amount >= 0, "diff_amount = %d is less than 0 " % diff_amount
 
         # 不同月份的自然月天数
         days_3m = (toolkit.add_months_obj(self._start_date, 3) - self._start_date).days
@@ -74,7 +73,7 @@ class Deposit:
         days_12m = (toolkit.add_months_obj(self._start_date, 12) - self._start_date).days
 
         n = (statis_date - self._start_date).days
-        assert 0 <= n <= days_12m, "n=%d is out of one year" % n
+        assert 0 <= n <= days_12m, "n=%d is out of one year, statis_date=%s and deposit=%s" % (n, statis_date, self)
 
         # 详细的分段计算公式，参考文档:<home>/doc/利息计算公式.docx
         earn_interest = diff_amount

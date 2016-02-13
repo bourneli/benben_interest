@@ -56,7 +56,7 @@ def main():
         print u"计算完成！"
     except Exception, e:
         print u"异常:%s" % str(e)
-        traceback.print_stack()
+        traceback.print_tb()
 
     print u"按任意键结束！"
     raw_input("")

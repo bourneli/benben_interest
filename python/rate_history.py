@@ -56,7 +56,7 @@ class RateHistory:
 
         for rate_info in self._rate_list:
             if rate_info.start() <= date <= rate_info.end():
-                print rate_info
+                print '%s => %s' % (date, rate_info)
                 return rate_info.rates()
 
         raise Exception("Not found rates for date %s" % date)
