@@ -5,6 +5,7 @@
 
 import sys
 import os.path
+import traceback
 
 from toolkit import *
 from account import Account
@@ -33,6 +34,7 @@ def main():
 
         rate_history = RateHistory(u"配置.ini")
         print rate_history
+        # return
 
         if len(sys.argv) < 2:
             data_file = raw_input(u"请输入文件名称:".encode('gbk')).decode('gbk')
@@ -54,6 +56,7 @@ def main():
         print u"计算完成！"
     except Exception, e:
         print u"异常:%s" % str(e)
+        traceback.print_stack()
 
     print u"按任意键结束！"
     raw_input("")

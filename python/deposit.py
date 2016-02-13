@@ -32,7 +32,6 @@ class Deposit:
     def withdraw(self, withdraw_amount):
 
         assert withdraw_amount >= 0, "required amount %d is less than 0" % withdraw_amount
-        diff_amount = 0
 
         if withdraw_amount < self._amount:
             diff_amount = withdraw_amount

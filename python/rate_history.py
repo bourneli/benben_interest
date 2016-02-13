@@ -29,7 +29,8 @@ class RateInfo:
         assert 'month_3' in rates, 'month_3 not exist in %s and %s' % (self._start, self._end)
         assert 'month_6' in rates, 'month_6 not exist in %s and %s' % (self._start, self._end)
         assert 'year_1' in rates, 'year_1 not exist in %s and %s' % (self._start, self._end)
-        self._rates = dict([(key, float(rates[key])) for key in rates.keys() if key in ['day_1', 'day_7', 'month_1', 'month_6', 'year_1']])
+        self._rates = dict([(key, float(rates[key])) for key in rates.keys() if key in ['day_1', 'day_7', 'month_3',
+                                                                                        'month_6', 'year_1']])
 
     def __str__(self):
         return 'From %s to %s, list:%s' % (self._start, self._end, self._rates)
@@ -55,6 +56,7 @@ class RateHistory:
 
         for rate_info in self._rate_list:
             if rate_info.start() <= date <= rate_info.end():
+                print rate_info
                 return rate_info.rates()
 
         raise Exception("Not found rates for date %s" % date)
